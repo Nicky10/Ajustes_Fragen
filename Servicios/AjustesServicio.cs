@@ -15,8 +15,9 @@ namespace Ajustes_Fragen.Servicios
 
         public AjustesServicio(IAjustesDatabaseSettings settings)
         {
-            var client = new MongoClient(settings.ConnectionString);
-            var database = client.GetDatabase(settings.DatabaseName);
+            
+            var client = new MongoClient("mongodb+srv://admin:Nicolas2020@ajustescloster.ajwc8.mongodb.net/AjustesDB?retryWrites=true&w=majority");
+            var database = client.GetDatabase("AjustesDB");
 
             _ajustes = database.GetCollection<Ajustes>(settings.AjustesCollectionName);
         }
@@ -24,7 +25,7 @@ namespace Ajustes_Fragen.Servicios
         public List<Ajustes> Get()
         {
             var lista = _ajustes.Find(s => s.Id != null).ToList(); ;
-            return lista;
+            return lista; 
         }
 
         public Ajustes Get(string id)
@@ -35,22 +36,30 @@ namespace Ajustes_Fragen.Servicios
             
         }
 
-        public Ajustes Create(Ajustes ajuste)
+        public String Create(Ajustes ajuste)
         {
             _ajustes.InsertOne(ajuste);
-            return ajuste;
+            return ajuste.ToJson();
         }
 
-        public void Update(string id, Ajustes ajus)
+        public String Update(string id, Ajustes ajus)
         {
             ajus.Id = id;
             _ajustes.ReplaceOne(aj => aj.Id == id, ajus);
+            return ajus.ToJson();
         }
 
-        public void Remove(Ajustes ajus) =>
+        public String Remove(Ajustes ajus)
+        {
+            string _id = ajus.Id;
             _ajustes.DeleteOne(aj => aj.Id == ajus.Id);
+            return _id;
+        }
 
-        public void Remove(string id) => 
+        public String Remove(string id)
+        {
             _ajustes.DeleteOne(aj => aj.Id == id);
+            return id;
+        }
     }
 }

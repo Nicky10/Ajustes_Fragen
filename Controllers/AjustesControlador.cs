@@ -22,11 +22,19 @@ namespace Ajustes_Fragen.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Ajustes> Get() =>
-            ajustesS.Get();
+        public List<String> Get()
+        {
+            List<String> listString = new List<string>();
+            var listaAjustes = ajustesS.Get();
+            foreach(Ajustes ajuste in listaAjustes)
+            {
+                listString.Add(ajuste.ToJson());
+            }
+            return listString;
+        }
 
         [HttpGet("{id}")]
-        public Ajustes Get(string id)
+        public String Get(string id)
         {
             var _ajustes = ajustesS.Get(id);
 
@@ -35,52 +43,47 @@ namespace Ajustes_Fragen.Controllers
                 return null;
             }
 
-            return _ajustes;
+            return _ajustes.ToJson();
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Ajustes _ajustes)
+        public String Create([FromBody] Ajustes _ajustes)
         {
             try
             {
-                ajustesS.Create(_ajustes);
-                return StatusCode(StatusCodes.Status201Created, _ajustes);
+                return ajustesS.Create(_ajustes);
             }
             catch (Exception ex)
             { 
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return ex.ToString();
             }
             
         }
 
         [HttpPut("{id}")]
-        public IActionResult PUT(string id, [FromBody] Ajustes value)
+        public String PUT(string id, [FromBody] Ajustes value)
         {
             var _ajustes = ajustesS.Get(id);
 
             if (_ajustes == null)
             {
-                return NotFound();
+                return null;
             }
 
-            ajustesS.Update(id, value);
-
-            return NoContent();
+            return ajustesS.Update(id, value);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public String Delete(string id)
         {
             var _ajustes = ajustesS.Get(id);
 
             if (_ajustes == null)
             {
-                return NotFound();
+                return null;
             }
 
-            ajustesS.Remove(_ajustes);
-
-            return NoContent();
+            return ajustesS.Remove(_ajustes);
         }
     }
 }
